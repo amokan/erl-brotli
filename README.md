@@ -6,13 +6,14 @@ An OTP library
 Build
 -----
 
-    $ rebar3 compile
+`rebar3 compile`
 
 Example Usage (from Elixir)
 -----
+
 Start `iex` and then:
 
-```
+```shell
 iex(1)> c ("src/brotli.erl")
 [:brotli]
 
