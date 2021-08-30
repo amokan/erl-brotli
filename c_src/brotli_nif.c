@@ -33,7 +33,7 @@
 #include "include/brotli/encode.h"
 #include "include/brotli/decode.h"
 
-#define BADARG             enif_make_badarg(env)
+#define BADARG enif_make_badarg(env)
 
 static ERL_NIF_TERM
 brotli_encode(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -41,30 +41,35 @@ brotli_encode(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
     unsigned int quality;
     ErlNifBinary data, encoded;
 
-    if (argc != 2) {
+    if (argc != 2)
+    {
         return (BADARG);
     }
 
-    if (!enif_inspect_iolist_as_binary(env, argv[0], &data)) {
+    if (!enif_inspect_iolist_as_binary(env, argv[0], &data))
+    {
         return (BADARG);
     }
 
-    if (!enif_get_uint(env, argv[1], &quality)) {
+    if (!enif_get_uint(env, argv[1], &quality))
+    {
         return (BADARG);
     }
 
     size_t length = data.size;
     size_t output_length = BrotliEncoderMaxCompressedSize(data.size);
-    uint8_t* output = (uint8_t*)malloc(output_length);
+    uint8_t *output = (uint8_t *)malloc(output_length);
     BROTLI_BOOL ok = BrotliEncoderCompress(quality,
-        BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE,
-        length, data.data,
-        &output_length, output);
-    if(!ok) {
+                                           BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE,
+                                           length, data.data,
+                                           &output_length, output);
+    if (!ok)
+    {
         free(output);
         return (BADARG);
     }
-    if (!enif_alloc_binary(output_length, &encoded)) {
+    if (!enif_alloc_binary(output_length, &encoded))
+    {
         free(output);
         return (BADARG);
     }
@@ -75,7 +80,7 @@ brotli_encode(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
     return enif_make_binary(env, &encoded);
 }
 
-static int static ERL_NIF_TERM
+static ERL_NIF_TERM
 brotli_decode(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
     ErlNifBinary data, decoded;
@@ -135,7 +140,6 @@ brotli_load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info)
 
 static ErlNifFunc brotli_exports[] = {
     {"brotli_decode", 1, brotli_decode},
-    {"brotli_encode", 2, brotli_encode}
-};
+    {"brotli_encode", 2, brotli_encode}};
 
 ERL_NIF_INIT(brotli_nif, brotli_exports, brotli_load, NULL, NULL, NULL)
